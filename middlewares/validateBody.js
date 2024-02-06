@@ -2,11 +2,10 @@ import HttpError from "../helpers/HttpError.js";
 
 const validateBody = (schema) => {
   const func = (req, _, next) => {
-    const fieldsQty = Object.keys(req.body).length;
-
+    const bodyKeys = Object.keys(req.body).length;
     const { error } = schema.validate(req.body);
 
-    if (!fieldsQty) {
+    if (!bodyKeys) {
       next(HttpError(400, "Body must have at least one field"));
     }
 
