@@ -1,12 +1,17 @@
 import dotenv from "dotenv";
 dotenv.config();
+import fs from "fs/promises";
+import path from "path";
 import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
+import gravatar from "gravatar";
+import Jimp from "jimp";
 import { User } from "../models/user.js";
 import HttpError from "../helpers/HttpError.js";
 import ctrlWrapper from "../helpers/ctrlWrapper.js";
 
 const { SECRET_KEY } = process.env;
+const avatarsDir = path.resolve("public", "avatars");
 
 export const register = ctrlWrapper(async (req, res) => {
   const { email, password } = req.body;
@@ -17,7 +22,12 @@ export const register = ctrlWrapper(async (req, res) => {
   }
 
   const hashPassword = await bcryptjs.hash(password, 10);
-  const newUser = await User.create({ ...req.body, password: hashPassword });
+  const avatarURL = gravatar.url(email);
+  const newUser = await User.create({
+    ...req.body,
+    password: hashPassword,
+    avatarURL,
+  });
 
   res.status(201).json({
     user: {
@@ -78,5 +88,29 @@ export const updateSubscription = ctrlWrapper(async (req, res) => {
   await User.findByIdAndUpdate(_id, { subscription });
   res.json({
     message: "Subscription has been updated successfully",
+  });
+});
+
+export const updateAvatar = ctrlWrapper(async (req, res) => {
+  const { _id } = req.user;
+
+  if (!req.file) {
+    throw HttpError(400, "Please, attach avatar.It is required.");
+  }
+
+  const { path: tempUpload, originalname } = req.file;
+
+  const fileName = `${_id}_${originalname}`;
+  const resultUpload = path.resolve(avatarsDir, fileName);
+
+  const image = await Jimp.read(tempUpload);
+  image.resize(250, 250).write(tempUpload);
+  await fs.rename(tempUpload, resultUpload);
+
+  const avatarURL = path.join("avatars", fileName);
+  await User.findByIdAndUpdate(_id, { avatarURL });
+
+  res.json({
+    avatarURL,
   });
 });
