@@ -158,7 +158,7 @@ export const updateAvatar = ctrlWrapper(async (req, res) => {
   const resultUpload = path.resolve(avatarsDir, fileName);
 
   const image = await Jimp.read(tempUpload);
-  image.resize(250, 250).write(tempUpload);
+  await image.resize(250, 250).writeAsync(tempUpload);
   await fs.rename(tempUpload, resultUpload);
 
   const avatarURL = path.join("avatars", fileName);
