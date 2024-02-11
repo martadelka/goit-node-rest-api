@@ -71,7 +71,6 @@ export const verifyEmail = ctrlWrapper(async (req, res) => {
 export const resendVerifyEmail = ctrlWrapper(async (req, res) => {
   const { email } = req.body;
   const user = await User.findOne({ email });
-  console.log(user);
   if (!user) {
     throw HttpError(404, "User not found");
   }
