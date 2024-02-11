@@ -20,9 +20,8 @@ export const getAll = ctrlWrapper(async (req, res) => {
 });
 
 export const getById = ctrlWrapper(async (req, res) => {
-  const { _id: owner } = req.user;
   const { id } = req.params;
-  const result = await Contact.findById(id).where("owner").equals(owner);
+  const result = await Contact.findById(id);
 
   if (!result) {
     throw HttpError(404, "Not Found");
@@ -32,11 +31,8 @@ export const getById = ctrlWrapper(async (req, res) => {
 });
 
 export const deleteById = ctrlWrapper(async (req, res) => {
-  const { _id: owner } = req.user;
   const { id } = req.params;
-  const result = await Contact.findByIdAndDelete(id)
-    .where("owner")
-    .equals(owner);
+  const result = await Contact.findByIdAndDelete(id);
 
   if (!result) {
     throw HttpError(404, "Not Found");
@@ -52,11 +48,8 @@ export const create = ctrlWrapper(async (req, res) => {
 });
 
 export const updateById = ctrlWrapper(async (req, res) => {
-  const { _id: owner } = req.user;
   const { id } = req.params;
-  const result = await Contact.findByIdAndUpdate(id, req.body, { new: true })
-    .where("owner")
-    .equals(owner);
+  const result = await Contact.findByIdAndUpdate(id, req.body, { new: true });
 
   if (!result) {
     throw HttpError(404, "Not found");
@@ -66,11 +59,8 @@ export const updateById = ctrlWrapper(async (req, res) => {
 });
 
 export const updateFavorite = ctrlWrapper(async (req, res) => {
-  const { _id: owner } = req.user;
   const { id } = req.params;
-  const result = await Contact.findByIdAndUpdate(id, req.body, { new: true })
-    .where("owner")
-    .equals(owner);
+  const result = await Contact.findByIdAndUpdate(id, req.body, { new: true });
 
   if (!result) {
     throw HttpError(404, "Not found");

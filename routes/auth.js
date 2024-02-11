@@ -10,6 +10,8 @@ import {
   logout,
   updateSubscription,
   updateAvatar,
+  verifyEmail,
+  resendVerifyEmail,
 } from "../controllers/auth.js";
 
 const authRouter = express.Router();
@@ -18,6 +20,14 @@ authRouter.post(
   "/register",
   validateBody(authSchemas.registerSchema),
   register
+);
+
+authRouter.get("/verify/:verificationToken", verifyEmail);
+
+authRouter.post(
+  "/verify",
+  validateBody(authSchemas.verificationEmailSchema),
+  resendVerifyEmail
 );
 
 authRouter.post("/login", validateBody(authSchemas.loginSchema), login);
